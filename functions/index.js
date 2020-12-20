@@ -21,7 +21,8 @@ exports.createRoom = functions.https.onCall(async (data, context) => {
   let roomcode = "";
   const documents = await admin.firestore().collection('rooms').get();
 
-  for (document in documents.docs) {
+  for (document of documents.docs) {
+    console.log(document.id);
     documentList.push(document.id)
   }
 
@@ -32,4 +33,16 @@ exports.createRoom = functions.https.onCall(async (data, context) => {
   const writeDoc = await admin.firestore().collection('rooms').doc(roomcode).set({'participants': [data.name], 'messages': []});
 
   return roomcode;
+});
+
+exports.deleteRoom = functions.firestore.document('rooms/{docId}').onUpdate(async (change, context) => {
+  if (change.after.data().participants.length === 0) {
+    let roomcode = context.params.docId;
+    const subCollection = await admin.firestore().collection('rooms').doc(roomcode).collection('paintBrushes').get();
+    for (doc of subCollection.docs) {
+       console.log(doc.id);
+       admin.firestore().collection('rooms').doc(roomcode).collection('paintBrushes').doc(doc.id).delete();
+    }
+    const deleteDoc = await admin.firestore().collection('rooms').doc(roomcode).delete();
+  }
 });
