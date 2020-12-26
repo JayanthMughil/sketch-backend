@@ -30,7 +30,16 @@ exports.createRoom = functions.https.onCall(async (data, context) => {
     roomcode = generateRandomString(6);
   }
 
-  const writeDoc = await admin.firestore().collection('rooms').doc(roomcode).set({'participants': [data.name], 'messages': []});
+  const writeDoc = await admin.firestore().collection('rooms').doc(roomcode).set(
+    {
+      'participants': [data.name], 
+      'messages': [], 
+      'paintBrushes': [],
+      'points': [],
+      'brushColor': 4278190080,
+      'brushSize': 10
+    }
+  );
 
   return roomcode;
 });
