@@ -38,23 +38,6 @@ exports.createRoom = functions.https.onCall(async (data, context) => {
 exports.deleteRoom = functions.firestore.document('rooms/{docId}').onUpdate(async (change, context) => {
   if (change.after.data().participants.length === 0) {
     let roomcode = context.params.docId;
-    const subCollection = await admin.firestore().collection('rooms').doc(roomcode).collection('paintBrushes').get();
-    for (doc of subCollection.docs) {
-       console.log(doc.id);
-       admin.firestore().collection('rooms').doc(roomcode).collection('paintBrushes').doc(doc.id).delete();
-    }
     const deleteDoc = await admin.firestore().collection('rooms').doc(roomcode).delete();
   }
-});
-
-exports.clearBrushes = functions.https.onCall(async (data, context) => {
-
-  const subCollection = await admin.firestore().collection('rooms').doc(data.roomcode).collection('paintBrushes').get();
-  let deletePromise= [];
-  for (doc of subCollection.docs) {
-    console.log(doc.id);
-    deletePromise.push(admin.firestore().collection('rooms').doc(data.roomcode).collection('paintBrushes').doc(doc.id).delete());
- }
-
-  return Promise.all(deletePromise);
 });
