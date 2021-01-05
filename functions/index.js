@@ -35,7 +35,7 @@ exports.createRoom = functions.https.onCall(async (data, context) => {
       'participants': [data.name], 
       'messages': [], 
       'paintBrushes': [],
-      'points': [],
+      'points': "clear",
       'brushColor': 4278190080,
       'brushSize': 10
     }
