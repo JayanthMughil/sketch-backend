@@ -33,6 +33,9 @@ exports.createRoom = functions.https.onCall(async (data, context) => {
   const writeDoc = await admin.firestore().collection('rooms').doc(roomcode).set(
     {
       'participants': [data.name], 
+      'leader': data.name,
+      'currentPainter': "",
+      'isStarted': false,
       'messages': [], 
       'paintBrushes': [],
       'points': "clear",
