@@ -15,6 +15,20 @@ const generateRandomString = (length) => {
   return result;
 }
 
+const getThreeWords = (arr, n) => {
+  var result = new Array(n),
+      len = arr.length,
+      taken = new Array(len);
+  if (n > len)
+      throw new RangeError("getRandom: more elements taken than available");
+  while (n--) {
+      var x = Math.floor(Math.random() * len);
+      result[n] = arr[x in taken ? taken[x] : x];
+      taken[x] = --len in taken ? taken[len] : len;
+  }
+  return result;
+}
+
 exports.createRoom = functions.https.onCall(async (data, context) => {
 
   let documentList = [];
@@ -52,4 +66,16 @@ exports.deleteRoom = functions.firestore.document('rooms/{docId}').onUpdate(asyn
     let roomcode = context.params.docId;
     const deleteDoc = await admin.firestore().collection('rooms').doc(roomcode).delete();
   }
+});
+
+exports.getWordChoices = functions.https.onCall(async (data, context) => {
+
+  let wordChoices = [];
+
+  const doc = await admin.firestore().collection('words').doc('wordList').get();
+  const wordList = doc.data().words;
+
+  wordChoices = getThreeWords(wordList, 3);
+
+  return wordChoices;
 });
